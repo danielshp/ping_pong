@@ -2,6 +2,7 @@ from pygame import *
 from random import randint
 img_back = "mirage.png"
 img_hero = "defus.png"
+img_ball = "c4.png"
 win_width = 700
 win_height = 500
 window = display.set_mode((win_width, win_height))
@@ -38,12 +39,19 @@ class Player(GameSprite):
             self.rect.y += self.speed
 player1 =  Player(img_hero, 1, 100, 60, 200, 5)
 player2 =  Player(img_hero, 640, 100, 60, 200, 5)
-class Enemy(GameSprite):
-    pass
+speed_x = 3
+speed_y = 3
+
+ball = GameSprite(img_ball, 200 , 200, 30, 150, 3)
 
 
-
+clock = time.Clock()
 finish = False
+FPS = 60
+font.init()
+font = font.Font(None, 35)
+lose1 = font.render("Player1 Lose!", True, (180,0,0))
+lose2 = font.render("Player2 Lose!", True, (180,0,0))
 
 run = True 
 while run:
@@ -53,8 +61,27 @@ while run:
         
     if not finish:
         window.blit(background,(0,0))
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
         player1.update_l()
         player2.update_r()
+
+        if sprite.collide_rect( player1, ball) or sprite.collide_rect( player2, ball):
+            speed_x *= -1
+            speed_y *= -1
+        if ball.rect.y  > win_height-50 or ball.rect.y < 0:
+            speed_y *= -1
+        if ball.rect.x < 0:
+            finish = True
+            window.blit(lose1 ,(200, 200))
+            game_over = True
+        if ball.rect.x > win_width:
+            finish = True
+            window.blit(lose1 ,(200, 200))
+            game_over = True        
         player1.reset()
         player2.reset()
-        display.update()
+        ball.reset()
+    display.update()
+    clock.tick(FPS)
+        
