@@ -37,23 +37,27 @@ class Player(GameSprite):
             self.rect.y -= self.speed
         if keys[K_DOWN] and self.rect.y < win_height - 170:
             self.rect.y += self.speed
-player1 =  Player(img_hero, 1, 100, 60, 200, 5)
-player2 =  Player(img_hero, 640, 100, 60, 200, 5)
+player1 =  Player(img_hero, 1, 100, 60, 150, 5)
+player2 =  Player(img_hero, 640, 100, 60, 150, 5)
 speed_x = 3
 speed_y = 3
 
-ball = GameSprite(img_ball, 200 , 200, 30, 150, 3)
+ball = GameSprite(img_ball, 200 , 200, 30, 80, 5)
+
 
 
 clock = time.Clock()
 finish = False
 FPS = 60
 font.init()
+points1 = 0
+points2 = 0
 font = font.Font(None, 35)
 lose1 = font.render("Player1 Lose!", True, (180,0,0))
 lose2 = font.render("Player2 Lose!", True, (180,0,0))
 
 run = True 
+
 while run:
     for e in event.get():
         if e.type == QUIT:
@@ -65,23 +69,33 @@ while run:
         ball.rect.y += speed_y
         player1.update_l()
         player2.update_r()
-
+        win1 = font.render("Player1 points: " + str(points1), True, (180,0,0))
+        win2 = font.render("Player2 points: " + str(points2), True, (180,0,0))
         if sprite.collide_rect( player1, ball) or sprite.collide_rect( player2, ball):
             speed_x *= -1
-            speed_y *= -1
-        if ball.rect.y  > win_height-50 or ball.rect.y < 0:
+            speed_y *= 1
+        if ball.rect.y  > win_height-115 or ball.rect.y < 0:
             speed_y *= -1
         if ball.rect.x < 0:
-            finish = True
-            window.blit(lose1 ,(200, 200))
+            points2 = points2 + 1
             game_over = True
+            ball.rect.x = 350
+            ball.rect.y = 200 
         if ball.rect.x > win_width:
-            finish = True
-            window.blit(lose1 ,(200, 200))
-            game_over = True        
+            points1 = points1 + 1
+            game_over = True
+            ball.rect.x = 350
+            ball.rect.y = 200  
+        if points1 == 3 :
+            window.blit( lose2, (300,200))
+        if points2 == 3:
+            window.blit( lose1, (300,200))
+        window.blit( win1, (0,20))
+        window.blit( win2, (500,20))
         player1.reset()
         player2.reset()
         ball.reset()
     display.update()
     clock.tick(FPS)
+time.delay(50)
         
